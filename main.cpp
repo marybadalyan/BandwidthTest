@@ -1,0 +1,74 @@
+#include <iostream>
+#include <vector>
+#include <thread>
+#include <atomic>
+#include <chrono>
+#include <iomanip>
+#include <numeric>
+#include <immintrin.h> // AVX2
+
+std::atomic<bool> running(true);
+
+const size_t BUFFER_SIZE = 1ULL * 1024ULL * 1024ULL * 1024ULL; // 1 GB
+const size_t ITERATIONS = 20; // ~2-3s runtime
+const size_t THREAD_COUNT = 10; // i7-1355U cores
+
+std::vector<uint64_t> buffer(BUFFER_SIZE / sizeof(uint64_t), 0);
+
+void memory_stress_test(size_t thread_id, uint64_t& bytes_processed) {
+    size_t chunk_size = buffer.size() / THREAD_COUNT;
+    size_t start = thread_id * chunk_size;
+    size_t end = (thread_id == THREAD_COUNT - 1) ? buffer.size() : start + chunk_size;
+
+    bytes_processed = 0;
+    __m256i pattern = _mm256_set1_epi64x(0xDEADBEEF);
+
+    for (size_t iter = 0; iter < ITERATIONS && running; ++iter) {
+        for (size_t i = start; i < end - 15; i += 16) {
+            __m256i data1 = _mm256_load_si256(reinterpret_cast<__m256i*>(&buffer[i]));
+            __m256i data2 = _mm256_load_si256(reinterpret_cast<__m256i*>(&buffer[i + 4]));
+            __m256i data3 = _mm256_load_si256(reinterpret_cast<__m256i*>(&buffer[i + 8]));
+            __m256i data4 = _mm256_load_si256(reinterpret_cast<__m256i*>(&buffer[i + 12]));
+            _mm256_stream_si256(reinterpret_cast<__m256i*>(&buffer[i]), pattern);
+            _mm256_stream_si256(reinterpret_cast<__m256i*>(&buffer[i + 4]), data1);
+            _mm256_stream_si256(reinterpret_cast<__m256i*>(&buffer[i + 8]), data2);
+            _mm256_stream_si256(reinterpret_cast<__m256i*>(&buffer[i + 12]), data3);
+            bytes_processed += sizeof(uint64_t) * 32; // 128 bytes read + 128 bytes written
+        }
+    }
+}
+
+int main() {
+    std::cout << "Using " << THREAD_COUNT << " threads\n";
+    std::cout << "Buffer size: " << BUFFER_SIZE / (1024.0 * 1024.0 * 1024.0) << " GB\n";
+
+    std::fill(buffer.begin(), buffer.end(), 1);
+
+    std::vector<std::thread> threads;
+    std::vector<uint64_t> bytes_per_thread(THREAD_COUNT, 0);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    for (size_t i = 0; i < THREAD_COUNT; ++i) {
+        threads.emplace_back(memory_stress_test, i, std::ref(bytes_per_thread[i]));
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+
+    uint64_t total_bytes = std::accumulate(bytes_per_thread.begin(), bytes_per_thread.end(), 0ULL);
+    double total_gb = total_bytes / (1024.0 * 1024.0 * 1024.0);
+    double throughput = total_gb / elapsed.count(); // GB/s
+
+    std::cout << std::fixed << std::setprecision(2);
+    std::cout << "Total bytes processed: " << total_gb << " GB\n";
+    std::cout << "Elapsed time: " << elapsed.count() << " seconds\n";
+    std::cout << "Throughput: " << throughput << " GB/s\n";
+    std::cout << "All threads completed.\n";
+
+    return 0;
+}
