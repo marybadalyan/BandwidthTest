@@ -13,11 +13,7 @@ std::atomic<bool> running(true);
 const size_t BUFFER_SIZE = 1ULL * 1024ULL * 1024ULL * 1024ULL; // 1 GB
 const size_t ITERATIONS = 20;
 
-#ifdef _WIN32
-const size_t THREAD_COUNT = 10; // Windows prefers higher threads
-#else
-const size_t THREAD_COUNT = 2;  // Ubuntu prefers hardware concurrency
-#endif
+const size_t THREAD_COUNT = std::thread::hardware_concurrency()
 
 // Custom allocator for 32-byte alignment
 template<typename T>
