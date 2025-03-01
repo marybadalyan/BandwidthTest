@@ -62,7 +62,7 @@ The program will:
 - Measure memory throughput and provide the following statistics:
     - **Buffer Size** (in GB)
     - **Thread Count** 
-    - **Total bytes processed** (in GB)
+    - **Bytes processed** (in GB)
     - **Elapsed time** (in seconds)
     - **Throughput** (in GB/s)
 
@@ -77,7 +77,7 @@ You can modify the number of threads or the number of iterations in the `main.cp
 +----------------------+-----------------+
 | Thread Count:        |        4        |
 +----------------------+-----------------+
-| Total Data:          |    40.00 GB     |
+| Bytes processed:     |    40.00 GB     |
 +----------------------+-----------------+
 | Elapsed Time:        |     1.04 s      |
 +----------------------+-----------------+
