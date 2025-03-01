@@ -92,7 +92,7 @@ int main() {
     std::cout << "+----------------------+-----------------+\n";
     std::cout << "| Thread Count:        | " << std::setw(8) << THREAD_COUNT << "        |\n";
     std::cout << "+----------------------+-----------------+\n";
-    std::cout << "| Total Data:          | " << std::setw(8) << std::fixed << std::setprecision(2) << total_gb    << " GB     |\n";
+    std::cout << "| Bytes processed:     | " << std::setw(8) << std::fixed << std::setprecision(2) << total_gb    << " GB     |\n";
     std::cout << "+----------------------+-----------------+\n";
     std::cout << "| Elapsed Time:        | " << std::setw(8) << std::fixed << std::setprecision(2) << elapsed.count() << " s      |\n";
     std::cout << "+----------------------+-----------------+\n";
