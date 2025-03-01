@@ -11,9 +11,9 @@ std::atomic<bool> running(true);
 
 const size_t BUFFER_SIZE = 1ULL * 1024ULL * 1024ULL * 1024ULL; // 1 GB
 const size_t ITERATIONS = 20; // ~2-3s runtime
-const size_t THREAD_COUNT = 10; // i7-1355U cores
+const size_t THREAD_COUNT = std::thread::hardware_concurrency(); // i7-1355U cores
 
-std::vector<uint64_t> buffer(BUFFER_SIZE / sizeof(uint64_t), 0);
+alignas(32) std::vector<uint64_t> buffer(BUFFER_SIZE / sizeof(uint64_t), 0);
 
 void memory_stress_test(size_t thread_id, uint64_t& bytes_processed) {
     size_t chunk_size = buffer.size() / THREAD_COUNT;
