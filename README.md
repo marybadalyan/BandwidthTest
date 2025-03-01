@@ -1,7 +1,7 @@
 # BandwidthTest - Memory Stress Test for Measuring Throughput
 
 ## Description
-`BandwidthSatsTest` is a C++ program designed to stress-test memory by performing high-frequency read-write operations with multiple threads. The program maximizes memory bus saturation to assess the memory bandwidth performance of the system. It utilizes AVX2 instructions for fast, vectorized memory access and measures the throughput in GB/s.
+`BandwidthTest` is a C++ program designed to stress-test memory by performing high-frequency read-write operations with multiple threads. The program maximizes memory bus saturation to assess the memory bandwidth performance of the system. It utilizes AVX2 instructions for fast, vectorized memory access and measures the throughput in GB/s.
 
 The program uses a 1 GB buffer and runs with a configurable number of threads. The main objective is to test memory throughput under heavy load, providing real-time statistics such as total bytes processed, elapsed time, and throughput in GB/s.
 
