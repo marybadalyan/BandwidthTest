@@ -1,17 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
 
-# Set the project name
 project(Tryout)
 
-# Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Add threading support
-find_package(Threads REQUIRED)
+# Compiler flags for AVX2
+if(MSVC)
+    add_definitions(/arch:AVX2)
+elseif(UNIX) # Covers Linux and macOS
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2")
+endif()
 
-# Add the executable
+# Add executable
 add_executable(Tryout main.cpp)
 
-# Link threading library
-target_link_libraries(Tryout PRIVATE Threads::Threads)
+# Ensure AVX2 support
+target_compile_options(Tryout PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/arch:AVX2>
+    $<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-mavx2>
+)
