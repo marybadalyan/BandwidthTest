@@ -1,4 +1,4 @@
-# BandwidthSatsTest - Memory Stress Test for Measuring Throughput
+# BandwidthTest - Memory Stress Test for Measuring Throughput
 
 ## Description
 `BandwidthSatsTest` is a C++ program designed to stress-test memory by performing high-frequency read-write operations with multiple threads. The program maximizes memory bus saturation to assess the memory bandwidth performance of the system. It utilizes AVX2 instructions for fast, vectorized memory access and measures the throughput in GB/s.
@@ -20,12 +20,12 @@ The program uses a 1 GB buffer and runs with a configurable number of threads. T
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/marybadalyan/BandwidthSatsTest
+    git clone https://github.com/marybadalyan/BandwidthTest
     ```
 
 2. **Go into the repository**:
     ```bash
-    cd BandwidthSatsTest
+    cd BandwidthTest
     ```
 
 3. **Generate the build files**:
@@ -40,7 +40,7 @@ The program uses a 1 GB buffer and runs with a configurable number of threads. T
 
 5. **Run the executable** generated in the build directory:
     ```bash
-    ./build/BandwidthSatsTest
+    ./build/BandwidthTest
     ```
 
 ### Platform-Specific Compiler Flags:
@@ -53,13 +53,15 @@ The project uses AVX2 instructions to maximize memory throughput. The `CMakeList
 Once compiled, run the program to start the memory stress test:
 
 ```bash
-./BandwidthSatsTest
+./BandwidthTest
 ```
 
 The program will:
 - Display the number of threads being used.
 - Output the total size of the buffer (1 GB).
 - Measure memory throughput and provide the following statistics:
+    - **Buffer Size** (in GB)
+    - **Thread Count** 
     - **Total bytes processed** (in GB)
     - **Elapsed time** (in seconds)
     - **Throughput** (in GB/s)
