@@ -64,9 +64,19 @@ int main() {
     double throughput = total_gb / elapsed.count(); // GB/s
 
     std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Total bytes processed: " << total_gb << " GB\n";
-    std::cout << "Elapsed time: " << elapsed.count() << " seconds\n";
-    std::cout << "Throughput: " << throughput << " GB/s\n";
+    std::cout << "+----------------------+-----------------+\n";
+    std::cout << "| Performance Metrics  |    Value        |\n";
+    std::cout << "+----------------------+-----------------+\n";
+    std::cout << "| Buffer Size:         | " << std::setw(8) << std::fixed << std::setprecision(2) << BUFFER_SIZE  << " GB     |\n";
+    std::cout << "+----------------------+-----------------+\n";
+    std::cout << "| Thread Count:        | " << std::setw(8) << THREAD_COUNT << "        |\n";
+    std::cout << "+----------------------+-----------------+\n";
+    std::cout << "| Total Data:          | " << std::setw(8) << std::fixed << std::setprecision(2) << total_gb    << " GB     |\n";
+    std::cout << "+----------------------+-----------------+\n";
+    std::cout << "| Elapsed Time:        | " << std::setw(8) << std::fixed << std::setprecision(2) << elapsed.count() << " s      |\n";
+    std::cout << "+----------------------+-----------------+\n";
+    std::cout << "| Throughput:          | " << std::setw(8) << std::fixed << std::setprecision(2) << throughput << " GB/s   |\n";
+    std::cout << "+----------------------+-----------------+\n";
     std::cout << "All threads completed.\n";
 
     return 0;
