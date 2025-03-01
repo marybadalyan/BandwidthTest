@@ -14,7 +14,7 @@ const size_t BUFFER_SIZE = 1ULL * 1024ULL * 1024ULL * 1024ULL; // 1 GB
 const size_t ITERATIONS = 20;
 
 #ifdef _WIN32
-const size_t THREAD_COUNT = 10; // Windows prefers higher threads
+const size_t THREAD_COUNT = std::thread::hardware_concurrency(); // Windows prefers higher threads
 #else
 const size_t THREAD_COUNT = std::thread::hardware_concurrency();  // Ubuntu prefers hardware concurrency
 #endif
