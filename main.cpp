@@ -12,7 +12,7 @@ std::atomic<bool> running(true);
 
 const size_t BUFFER_SIZE = 1ULL * 1024ULL * 1024ULL * 1024ULL; // 1 GB
 const size_t ITERATIONS = 20;
-const size_t THREAD_COUNT = 10; // Dynamic thread count
+const size_t THREAD_COUNT = 10; // or std::thread::hardware_concurrency()  for dynamic thread count
 
 // Custom allocator for 32-byte alignment
 template<typename T>
