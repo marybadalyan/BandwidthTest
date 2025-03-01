@@ -57,9 +57,6 @@ void memory_stress_test(size_t thread_id, uint64_t& bytes_processed) {
 }
 
 int main() {
-    std::cout << "Using " << THREAD_COUNT << " threads\n";
-    std::cout << "Buffer size: " << BUFFER_SIZE / (1024.0 * 1024.0 * 1024.0) << " GB\n";
-
     std::fill(buffer.begin(), buffer.end(), 1);
 
     std::vector<std::thread> threads;
@@ -86,7 +83,7 @@ int main() {
     std::cout << "+----------------------+-----------------+\n";
     std::cout << "| Performance Metrics  |    Value        |\n";
     std::cout << "+----------------------+-----------------+\n";
-    std::cout << "| Buffer Size:         | " << std::setw(8) << std::fixed << std::setprecision(2) << BUFFER_SIZE  << " GB     |\n";
+    std::cout << "| Buffer Size:         | " << std::setw(8) << std::fixed << std::setprecision(2) << BUFFER_SIZE / (1024.0 * 1024.0 * 1024.0)  << " GB     |\n";
     std::cout << "+----------------------+-----------------+\n";
     std::cout << "| Thread Count:        | " << std::setw(8) << THREAD_COUNT << "        |\n";
     std::cout << "+----------------------+-----------------+\n";
