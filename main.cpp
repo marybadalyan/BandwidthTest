@@ -72,11 +72,8 @@ void memory_stress_test(size_t thread_id, size_t thread_count, uint64_t& bytes_p
 int main(int argc, char* argv[]) {
     // Parse command-line arguments with Kaizen
     zen::cmd_args args(argv, argc);
-    size_t thread_count = args.accept("--threads").count_accepted();
-    if (thread_count < 1) {
-        std::cerr << "Error: Thread count must be at least 1. Using 1 instead.\n";
-        thread_count = 1;
-    }
+    auto thread_options = args.get_options("--threads");
+    size_t thread_count = static_cast<size_t>(std::atoi(thread_options[0].c_str()));
 
     std::fill(buffer.begin(), buffer.end(), 1);
 
