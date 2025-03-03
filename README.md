@@ -15,7 +15,13 @@ The program uses a 1 GB buffer and runs with a configurable number of threads. T
 - C++17 compatible compiler
 - AVX2-enabled processor
 - CMake (for building the project)
-
+- I am using [kaizen](https://github.com/heinsaar/kaizen) library for parsing command line arguents for thread count see [example](https://github.com/heinsaar/kaizen/blob/master/Examples.md#program-arguments)
+  ```
+  int main(int argc, char* argv[]) {
+    // Parse command-line arguments with Kaizen
+    zen::cmd_args args(argv, argc);
+    size_t thread_count = args.accept("--threads").count_accepted();
+  ```
 ## Build Instructions
 
 1. **Clone the repository**:
