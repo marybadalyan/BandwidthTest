@@ -59,7 +59,7 @@ The project uses AVX2 instructions to maximize memory throughput. The `CMakeList
 Once compiled, run the program to start the memory stress test:
 
 ```bash
-./BandwidthTest --thread [num] // num as in int or ```std::thread::hardware.councurrency```
+./BandwidthTest --threads [num] // num as in int or ```std::thread::hardware.councurrency```
 ```
 
 The program will:
