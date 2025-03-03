@@ -9,13 +9,19 @@ The program uses a 1 GB buffer and runs with a configurable number of threads. T
 - **Memory stress testing** with maximum read-write operations.
 - Uses **AVX2** SIMD instructions for high throughput.
 - Supports **multi-threading** for parallel memory access and improved performance.
-- Calculates and displays the **memory throughput** in **GB/s**.
-
+- Real-time performance metrics including **memory throughput** in **GB/s**.
+- Configurable thread count via command-line arguments.
 ## Requirements
 - C++17 compatible compiler
 - AVX2-enabled processor
 - CMake (for building the project)
-
+- Using [Kaizen](https://github.com/heinsaar/kaizen) library for parsing command-line arguments for thread count. See [example](https://github.com/heinsaar/kaizen/blob/master/Examples.md#program-arguments)
+  ```
+  int main(int argc, char* argv[]) {
+    // Parse command-line arguments with Kaizen
+    zen::cmd_args args(argv, argc);
+    size_t thread_count = args.accept("--threads").count_accepted();
+  ```
 ## Build Instructions
 
 1. **Clone the repository**:
@@ -53,7 +59,7 @@ The project uses AVX2 instructions to maximize memory throughput. The `CMakeList
 Once compiled, run the program to start the memory stress test:
 
 ```bash
-./BandwidthTest
+./BandwidthTest --thread [num] // num as in int or ```std::thread::hardware.councurrency```
 ```
 
 The program will:
