@@ -7,38 +7,46 @@
 #include <numeric>
 #include <immintrin.h> // AVX2
 #include <memory>
+#include "kaizen.h"
 
 std::atomic<bool> running(true);
-
 const size_t BUFFER_SIZE = 1ULL * 1024ULL * 1024ULL * 1024ULL; // 1 GB
 const size_t ITERATIONS = 20;
 
-#ifdef _WIN32
-const size_t THREAD_COUNT = 10; // Windows prefers higher threads
-#else
-const size_t THREAD_COUNT = std::thread::hardware_concurrency();  // Ubuntu prefers hardware concurrency
-#endif
-
+// Custom allocator for 32-byte alignment
 // Custom allocator for 32-byte alignment
 template<typename T>
 struct AlignedAllocator {
     using value_type = T;
+
+    AlignedAllocator() = default;
+
+    template <typename U>
+    AlignedAllocator(const AlignedAllocator<U>&) {}
+
     T* allocate(std::size_t n) {
         void* ptr = _mm_malloc(n * sizeof(T), 32); // 32-byte aligned malloc
         if (!ptr) throw std::bad_alloc();
         return static_cast<T*>(ptr);
     }
+
     void deallocate(T* ptr, std::size_t) {
         _mm_free(ptr);
     }
+
+    template <typename U>
+    struct rebind {
+        using other = AlignedAllocator<U>;
+    };
 };
+
 
 std::vector<uint64_t, AlignedAllocator<uint64_t>> buffer(BUFFER_SIZE / sizeof(uint64_t), 0);
 
-void memory_stress_test(size_t thread_id, uint64_t& bytes_processed) {
-    size_t chunk_size = buffer.size() / THREAD_COUNT;
+void memory_stress_test(size_t thread_id, size_t thread_count, uint64_t& bytes_processed) {
+    size_t chunk_size = buffer.size() / thread_count;
     size_t start = thread_id * chunk_size;
-    size_t end = (thread_id == THREAD_COUNT - 1) ? buffer.size() : start + chunk_size;
+    size_t end = (thread_id == thread_count - 1) ? buffer.size() : start + chunk_size;
 
     // Ensure end aligns with AVX2 step size
     end = start + ((end - start) / 16) * 16; // Round down to multiple of 16
@@ -61,16 +69,24 @@ void memory_stress_test(size_t thread_id, uint64_t& bytes_processed) {
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    // Parse command-line arguments with Kaizen
+    zen::cmd_args args(argv, argc);
+    size_t thread_count = args.accept("--threads").count_accepted();
+    if (thread_count < 1) {
+        std::cerr << "Error: Thread count must be at least 1. Using 1 instead.\n";
+        thread_count = 1;
+    }
+
     std::fill(buffer.begin(), buffer.end(), 1);
 
     std::vector<std::thread> threads;
-    std::vector<uint64_t> bytes_per_thread(THREAD_COUNT, 0);
+    std::vector<uint64_t> bytes_per_thread(thread_count, 0);
 
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (size_t i = 0; i < THREAD_COUNT; ++i) {
-        threads.emplace_back(memory_stress_test, i, std::ref(bytes_per_thread[i]));
+    for (size_t i = 0; i < thread_count; ++i) {
+        threads.emplace_back(memory_stress_test, i, thread_count, std::ref(bytes_per_thread[i]));
     }
 
     for (auto& t : threads) {
@@ -90,7 +106,7 @@ int main() {
     std::cout << "+----------------------+-----------------+\n";
     std::cout << "| Buffer Size:         | " << std::setw(8) << std::fixed << std::setprecision(2) << BUFFER_SIZE / (1024.0 * 1024.0 * 1024.0)  << " GB     |\n";
     std::cout << "+----------------------+-----------------+\n";
-    std::cout << "| Thread Count:        | " << std::setw(8) << THREAD_COUNT << "        |\n";
+    std::cout << "| Thread Count:        | " << std::setw(8) << thread_count << "        |\n";
     std::cout << "+----------------------+-----------------+\n";
     std::cout << "| Bytes processed:     | " << std::setw(8) << std::fixed << std::setprecision(2) << total_gb    << " GB     |\n";
     std::cout << "+----------------------+-----------------+\n";
@@ -101,5 +117,3 @@ int main() {
     std::cout << "All threads completed.\n";
     return 0;
 }
-
-
