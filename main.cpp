@@ -74,7 +74,9 @@ int main(int argc, char* argv[]) {
     zen::cmd_args args(argv, argc);
     auto thread_options = args.get_options("--threads");
     size_t thread_count = static_cast<size_t>(std::atoi(thread_options[0].c_str()));
-
+    if(thread_count == 0) {
+        thread_count = 1;
+    }
     std::fill(buffer.begin(), buffer.end(), 1);
 
     std::vector<std::thread> threads;
